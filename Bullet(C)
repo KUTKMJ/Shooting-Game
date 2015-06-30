@@ -1,0 +1,29 @@
+#include "Header.h"
+
+void MyBullet_Location() {
+
+}
+
+void MyBullet_Damage() {
+
+}
+
+void SmallBullet_Location() {
+
+}
+
+void SmallBullet_Damage() {
+
+}
+
+void Cannon_Location() {
+
+}
+
+void Cannon_Damage() {
+
+}
+
+void Bomb() {
+
+}
