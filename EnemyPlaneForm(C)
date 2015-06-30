@@ -1,0 +1,170 @@
+#include "Header.h"
+
+void background() {//배경화면 그리기
+	char space[50][80];
+	int x, y;
+	for (x = 0; x < 50; x++) {
+		for (y = 0; y < 80; y++) {
+			space[x][y] = 32;
+			printf("%c", space[x][y]);
+		}
+		printf("\n");
+	}
+}
+
+void BluePlaneLeft_Form(char blueplaneleft_Form[50][80]) {//왼쪽에서 출현하는 파란 비행기의 위치별 모양 / Life
+	int x,y,blueplaneleftbody, blueleftlocate_x;
+	char Life;
+	Life = 49;
+	for (x = 0; x < 50; x++) {
+		for (y = 0; y < 80; y++) {
+			blueplaneleft_Form[x][y] = Life;
+			for (blueplaneleftbody = -1; blueplaneleftbody <= 1; blueplaneleftbody++) {
+				blueleftlocate_x = x + blueplaneleftbody;
+				blueplaneleft_Form[blueleftlocate_x][y+1] = 45;
+				blueplaneleft_Form[blueleftlocate_x][y] = 45;	
+			}
+			blueplaneleft_Form[x][y - 2] = 92;
+			blueplaneleft_Form[x][y + 2] = 30;
+			blueplaneleft_Form[x][y] = Life;
+			if (mybullet_Location[x][y] == blueplaneleft_Form[x][y]) {
+				Life = 48;
+			}
+			if (x > 50 || y > 80 || x < 0 || y < 0 || Life == 48) {
+				return;
+				break;
+			}
+		}
+	}
+}
+void BluePlaneRight_Form(char blueplaneright_Form[50][80]) {//오른쪽에서 출현하는 파란색 비행기의 위치별 모양 / Life
+	int x, y, blueplanerightbody, bluerightlocate_x;
+	char Life;
+	Life = 49;
+	for (x = 50; x > 0; x--) {
+		for (y = 0; y < 80; y++) {
+			blueplaneright_Form[x][y] = Life;
+			for (blueplanerightbody = 1; blueplanerightbody >= -1; blueplanerightbody--) {
+				bluerightlocate_x = x + blueplanerightbody;
+				blueplaneright_Form[bluerightlocate_x][y + 1] = 45;
+				blueplaneright_Form[bluerightlocate_x][y] = 45;
+			}
+			blueplaneright_Form[x][y - 2] = 92;
+			blueplaneright_Form[x][y + 2] = 30;
+			blueplaneright_Form[x][y] = Life;
+			if (mybullet_Location[x][y] == blueplaneright_Form[x][y]) {
+				Life = 48;
+			}
+			if (x > 50 || y > 80 || x < 0 || y < 0 || Life == 48) {
+				return;
+				break;
+			}
+		}
+	}
+}
+
+void GreenPlaneRight_Form(char greenplaneright_Form[50][80]) {//오른쪽에서 출현하는 초록색 전투기의 위치별 모양 / Life
+	int x, y, greenplanerightbody, greenrightlocate_x;
+	char Life;
+	Life = 50;
+	for (y = 0; y < 80; y++) {
+		for (greenplanerightbody = -1; greenplanerightbody <= 1; greenplanerightbody++) {
+			greenrightlocate_x = 40 + greenplanerightbody;
+			greenplaneright_Form[greenrightlocate_x][y] = 45;
+			greenplaneright_Form[greenrightlocate_x][y - 1] = 124;
+			greenplaneright_Form[greenrightlocate_x][y + 1] = 45;
+		}
+		greenplaneright_Form[40][y + 1] = Life;
+		greenplaneright_Form[40][y + 2] = 79;
+		greenplaneright_Form[40][y - 2] = 30;
+		if (mybullet_Location[x][y] == greenplaneright_Form[x][y+1]) {
+			Life--;
+		}
+		if (x > 50 || y > 80 || x < 0 || y < 0 || Life == 48) {
+			return;
+			break;
+		}
+	}
+}
+void GreenPlaneLeft_Form(char greenplaneleft_Form[50][80]) {//왼쪽에서 출현하는 초록색 전투기의 위치별 모양 / Life
+	int x, y, greenplaneleftbody, greenleftlocate_x;
+	char Life;
+	Life = 50;
+	for (y = 0; y < 80; y++) {
+		for (greenplaneleftbody = -1; greenplaneleftbody <= 1; greenplaneleftbody++) {
+			greenleftlocate_x = 10 + greenplaneleftbody;
+			greenplaneleft_Form[greenleftlocate_x][y] = 45;
+			greenplaneleft_Form[greenleftlocate_x][y - 1] = 124;
+			greenplaneleft_Form[greenleftlocate_x][y + 1] = 45;
+		}
+		greenplaneleft_Form[10][y + 1] = Life;
+		greenplaneleft_Form[10][y + 2] = 79;
+		greenplaneleft_Form[10][y - 2] = 30;
+		if (mybullet_Location[x][y] == greenplaneleft_Form[x][y+1]) {
+			Life--;
+		}
+		if (x > 50 || y > 80 || x < 0 || y < 0 || Life == 48) {
+			return;
+			break;
+		}
+	}
+}
+
+
+void WhitePlane_Form(char whiteplane_Form[50][80]) {//거대 여객기의 위치별 모양 / Life
+	int x, y, whiteplanebody,whitelocation_x;
+	char Life,life;
+	Life = 50;
+	life = 48;
+	for (x=0;x<15;x++) {
+		for (y = 0; y < 30; y++) {
+			for (whiteplanebody = -3; whiteplanebody <= 4; whiteplanebody++) {
+				whitelocation_x = x + whiteplanebody;
+				whiteplane_Form[whitelocation_x][y] = 45;
+				whiteplane_Form[whitelocation_x][y - 1] - 45;
+			}
+			whiteplane_Form[x][y] = Life;
+			whiteplane_Form[x + 1][y] = life;
+			whiteplane_Form[x][y - 2] = 30;
+			whiteplane_Form[x + 1][y - 2] = 30;
+			whiteplane_Form[x][y + 1] = 84;
+			whiteplane_Form[x + 1][y + 1] = 84;
+			if (mybullet_Location[x][y] == whiteplane_Form[x+1][y]) {
+				if (life!=48) life--;
+				else if (life == 48) {
+					Life--;
+					life = 57;
+				}
+			}
+			if (x > 50 || y > 80 || x < 0 || y < 0 || Life == 48) {
+				return;
+				break;
+			}
+		}
+	}
+}
+void Ship_Cannon_Form() {//고정된 장소인 거대 함선에서 출현하는 캐논의 위치,모양 / Life
+
+}
+
+void Ship_CommandCenter_Form() {//고정된 장소인 거대 함선에서 출현하는 사령탑의 위치,모양 / Life
+
+}
+
+void Boss_Mod1_Form() {//보스 모드 1 / Life
+
+}
+
+void Boss_Mod2_Form() {//보스 모드 2 / Life
+
+}
+
+void Boss_Mod3_Form() {//보스 최종모드 / Life
+
+}
+
+
+
+
+
+
