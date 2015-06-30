@@ -1,0 +1,11 @@
+#include "Header.h"
+#include "MyPlaneForm.h"
+#include "Bullet.h"
+#include "EnemyPlaneForm.h"
+void background();
+
+int main(void) {
+	background();
+}
+
+
