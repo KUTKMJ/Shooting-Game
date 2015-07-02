@@ -26,16 +26,16 @@ void MyPlane_Form(char myplane_Form[50][80]) {
 				printf("      \n");
 			}
 			
-			if (ch == 72 && y>6) {
+			if (ch == UP && y>6) {
 				y -= 1;
 			}
-			else if (ch == 80 && y<43) {
+			else if (ch == DOWN && y<43) {
 				y += 1;
 			}
-			else if (ch == 75 && x>6) {
+			else if (ch == LEFT && x>6) {
 				x -= 1;
 			}
-			else if (ch == 77 && x<73) {
+			else if (ch == RIGHT && x<73) {
 				x += 1;
 			}
 		}
