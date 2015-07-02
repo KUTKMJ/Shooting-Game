@@ -1,5 +1,3 @@
-#include "Header.h"
-
 void background() {
 	char space[50][80];
 	int x, y;
@@ -292,7 +290,6 @@ void Boss_Mod1_Form(char boss_mod1_Form[50][80]) {
 	}
 
 }
-
 
 
 
