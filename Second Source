@@ -1,0 +1,223 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+#include <time.h>
+#include <Windows.h>
+#define UP 72
+#define DOWN 80
+#define LEFT 77
+#define RIGHT 75
+#define ESC 27
+#define CLEAN system("cls")
+#define MAXIMUM 3
+#define ENEMY 10
+void Init();
+void background();
+void PlayerFlight();
+static int g_nScreenIndex;
+static HANDLE g_hScreen[2]; // 스크린 버퍼 두 개 (전면, 후면) 선언
+int key;
+int bullet_x;
+int bullet_y;
+int bulletFlag;
+int player_x;
+int player_y;
+int bulletDelay;
+void ScreenInit()
+{
+	CONSOLE_CURSOR_INFO cci;
+
+	//전면 버퍼 후면 버퍼 2개의 가상 콘솔 창 버퍼를 만듦.
+	g_hScreen[0] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+	g_hScreen[1] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+	//커서 숨기기
+	cci.dwSize = 1;
+	cci.bVisible = FALSE;
+	SetConsoleCursorInfo(g_hScreen[0], &cci);
+	SetConsoleCursorInfo(g_hScreen[1], &cci);
+}
+
+enum { HIDDEN, SHOW };
+
+void CursorView(char show)
+{
+	HANDLE hConsole;
+	CONSOLE_CURSOR_INFO ConsoleCursor;
+
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	ConsoleCursor.bVisible = show;
+	ConsoleCursor.dwSize = 1;
+
+	SetConsoleCursorInfo(hConsole, &ConsoleCursor);
+}
+
+void ScreenFlipping() { // 페이지 플리핑
+	Sleep(10);
+	SetConsoleActiveScreenBuffer(g_hScreen[g_nScreenIndex]);
+	g_nScreenIndex = !g_nScreenIndex;
+}
+
+void ScreenClear() {
+	COORD Coor = { 0,0 };
+	DWORD dw;
+	FillConsoleOutputCharacter(g_hScreen[g_nScreenIndex], ' ', 80 * 25, Coor, &dw);
+}
+
+void ScreenRelease() {
+	CloseHandle(g_hScreen[0]);
+	CloseHandle(g_hScreen[1]);
+}
+
+void ScreenPrint(int x, int y, char *string) {
+	DWORD dw;
+	COORD CursorPosition = { x,y };
+	SetConsoleCursorPosition(g_hScreen[g_nScreenIndex], CursorPosition);
+	WriteFile(g_hScreen[g_nScreenIndex], string, strlen(string), &dw, NULL);
+}
+
+void SetColor(unsigned short color) {
+	{
+		SetConsoleTextAttribute(g_hScreen[g_nScreenIndex], color);
+	}
+}
+
+
+void gotoxy(int x, int y)
+{
+	COORD Cur;
+	Cur.X = x;
+	Cur.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Cur);
+}
+
+
+int main(void) {
+	int i;
+	char myplane_Form[50][80]; 
+	CursorView(Hidden)
+	background();
+	Init();
+	for (;;) {
+		PlayerFlight();
+		bulletmovement(i);
+		if (GetAsyncKeyState(VK_ESCAPE) < 0) break;
+	}
+	CursorView(SHOW);
+	return 0;
+}
+
+void background() {
+	char space[80][50];
+	int x, y;
+	for (x = 0; x < 50; x++) {
+		for (y = 0; y < 80; y++) {
+			space[x][y] = 32;
+			printf("%c", space[x][y]);
+		}
+		printf("\n"); 
+	}
+}
+
+void Init() {
+	int x = 37, y = 40,a,b;
+	int Life = 2;
+	char ch;
+	system("cls");
+	gotoxy(x, y);
+	printf("─Ⅲ─");
+}
+
+
+
+void PlayerFlight(void) {
+	int i, x, y;
+	char ch;
+	if (GetAsyncKeyState(VK_LEFT) < 0 && x < 74) {
+		gotoxy(x, y);
+		printf("      ");
+		x += 1;
+		bullet_x = x;
+		gotoxy(x, y);
+		printf("─Ⅲ─");
+	}
+	else if (GetAsyncKeyState(VK_RIGHT) < 0 && x > 0) {
+		gotoxy(x, y);
+		printf("      ");
+		x -= 1;
+		bullet_x = x;
+		gotoxy(x, y);
+		printf("─Ⅲ─");
+	}
+	else if (GetAsyncKeyState(VK_UP) < 0 && y > 0) {
+		gotoxy(x, y);
+		printf("      ");
+		y -= 1;
+		bullet_y = y;
+		gotoxy(x, y);
+		printf("─Ⅲ─");
+	}
+	else if (GetAsyncKeyState(VK_DOWN) < 0 && y < 50) {
+		gotoxy(x, y);
+		printf("      ");
+		y += 1;
+		bullet_y;
+		gotoxy(x, y);
+		printf("─Ⅲ─");
+	}
+	if (kbhit()) {
+		ch = getch();
+		switch (ch) {
+		case ' ':
+			for (i = 0; i < MAXIMUM && BULLET[i].exist == TRUE; i++) { ; }
+			if (i != MAXIMUM)
+			{
+				BULLET[i].x = bullet_x;
+				BULLET[i].y = bullet_y;
+				BULLET[i].exist = TRUE;
+			}
+			break;
+		case ESC:
+			exit(0);
+		}
+	}
+}
+
+void bulletmovement(void) {
+	int i;
+
+	for (i = 0; i < MAXIMUM; i++) {
+		if (BULLET[i].exist == TRUE) {
+			bulleterase(i);
+			if (BULLET[i].y == 0) {
+				BULLET[i].exist = FALSE;
+			}
+			else {
+				BULLET[i].y--;
+				bulletdraw(i);
+			}
+		}
+	}
+}
+
+void bulletdraw(int i) {
+	gotoxy(BULLET[i].x, BULLET[i].y);
+	printf("│");
+}
+
+void bulleterase(int i) {
+	gotoxy(BULLET[i].x, BULLET[i].y);
+	printf("  ");
+}
+
+struct {
+	BOOL exist;
+	int x, y;
+}BULLET[MAXIMUM];
+
+struct {
+	BOOL exist;
+	int enemytype;
+	int x, y;
+	int 
+};
