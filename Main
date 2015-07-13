@@ -191,7 +191,10 @@ void EraseBullet(int i) { // Player의 총알 지우기
 
 void PlayerBulletAction() {// Player의 총알 움직임.(Bullet_y의 좌표가 0(가장 위쪽 끝)이 되기 전까지 그려나감.
 	int i;
+	i=0;
+	Bullet[i].exist=TRUE;
 	for (i = 0; i < MAXBULLET; i++) {
+		
 		if (Bullet[i].exist == TRUE) {
 			EraseBullet(i);
 			if (Bullet[i].y == 0)
@@ -206,7 +209,7 @@ void PlayerBulletAction() {// Player의 총알 움직임.(Bullet_y의 좌표가 
 	}
 }
 
-void DrawEnemy() { // 적 기체 그리기.(rand() % +1을 random함수로 간단하게 표현) - 완료.
+void DrawEnemy() { // 적 기체 그리기.(rand() % +1을 random함수로 간단하게 표현)
 	BOOL Found;
 	int i, j;
 	if (random(100) == 0) {
@@ -241,7 +244,7 @@ void DrawEnemy() { // 적 기체 그리기.(rand() % +1을 random함수로 간�
 	}
 }
 
-void EnemyMoveAction() { // 적 움직임. - 완료.
+void EnemyMoveAction() { // 적 움직임.
 	int i;
 	for (i = 0; i < MAXENEMY; i++) {
 		if (Enemy[i].exist == FALSE)
