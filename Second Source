@@ -7,14 +7,19 @@
 
 typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE;
 
-void clrscr();
 void gotoxy(int x, int y);
+void DrawPlayer();
+void ErasePlayer();
 void PlayerMoveAction();
+void DrawBullet(int i);
+void EraseBullet(int i);
 void PlayerBulletAction();
 void DrawEnemy();
 void EnemyMoveAction();
 void MoveEnemyBullet();
 void EnemyBulletAction(int i);
+void DrawEnemyBullet(int i);
+void EraseEnemyBullet(int i);
 void EnemyCrash();
 void PlayerCrash();
 int wherex();
@@ -23,7 +28,7 @@ int Player_x;
 int Bullet_x;
 int Bullet_y;
 int Score = 0;
-char ch;
+int ch;
 void setcursortype(CURSOR_TYPE c);
 
 #define ESC 27
@@ -80,12 +85,12 @@ void setcursortype(CURSOR_TYPE c)
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CurInfo);
 }
 
-struct {
+struct {//총알을 관리하는 구조체 배열.
 	BOOL exist;
 	int x, y;
 }Bullet[MAXBULLET];
 
-struct {
+struct { // 적군을 추출하는 구조체 배열.
 	BOOL exist;
 	int type;
 	int x, y;
@@ -94,14 +99,14 @@ struct {
 	int nStay;
 }Enemy[MAXENEMY];
 
-struct {
+struct { // 적군의 총알을 관리하는 구조체 배열.
 	BOOL exist;
 	int x, y;
 	int nFrame;
 	int nStay;
 }EnemyBullet[MAXENEMYBULLET];
 
-char *arEnemy[] = { "◁◀▽▶▷","─■─","─□─","▒====▒" };
+char *arEnemy[] = { "◁◀▽▶▷","─■─","─□─","▒====▒" }; // 적 기체의 디자인.
 
 #endif  
 
@@ -112,7 +117,7 @@ char *arEnemy[] = { "◁◀▽▶▷","─■─","─□─","▒====▒" };
 
 
 
-int main(void) {
+int main(void) { // 메인함수.
 	setcursortype(NOCURSOR);
 	system("mode:con:lines = 40");
 	srand(unsigned (time(NULL)));
@@ -135,17 +140,17 @@ int main(void) {
 	return 0;
 }
 
-void DrawPlayer() {
+void DrawPlayer() { // Player의 기체.
 	gotoxy(Player_x, 39); 
 	printf("─Ⅲ─");
 }
 
-void ErasePlayer() {
+void ErasePlayer() { // Player의 기체 지우기.
 	gotoxy(Player_x, 39);
 	printf("      ");
 }
 
-void PlayerMoveAction() {
+void PlayerMoveAction() { // Player의 조작. space bar가 총알, esc는 종료, 좌 우 무빙.
 	int i;
 	if (GetAsyncKeyState(VK_LEFT) < 0 && Player_x > 1) {
 		ErasePlayer();
@@ -167,24 +172,24 @@ void PlayerMoveAction() {
 				Bullet[i].y = 38;
 				Bullet[i].exist = TRUE;
 			}
-			break;
+			break; 
 		case ESC:
 			exit(0);
 		}
 	}
 }
 
-void DrawBullet(int i) {
+void DrawBullet(int i) { //Player의 총알 그리기.
 	gotoxy(Bullet[i].x, Bullet[i].y);
 	printf("*");
 }
 
-void EraseBullet(int i) {
+void EraseBullet(int i) { // Player의 총알 지우기
 	gotoxy(Bullet[i].x, Bullet[i].y);
 	printf(" ");
 }
 
-void PlayerBulletAction() {
+void PlayerBulletAction() {// Player의 총알 움직임.(Bullet_y의 좌표가 0(가장 위쪽 끝)이 되기 전까지 그려나감.
 	int i;
 	for (i = 0; i < MAXBULLET; i++) {
 		if (Bullet[i].exist == TRUE) {
@@ -201,7 +206,7 @@ void PlayerBulletAction() {
 	}
 }
 
-void DrawEnemy() {
+void DrawEnemy() { // 적 기체 그리기.(rand() % +1을 random함수로 간단하게 표현) - 완료.
 	BOOL Found;
 	int i, j;
 	if (random(100) == 0) {
@@ -236,7 +241,7 @@ void DrawEnemy() {
 	}
 }
 
-void EnemyMoveAction() {
+void EnemyMoveAction() { // 적 움직임. - 완료.
 	int i;
 	for (i = 0; i < MAXENEMY; i++) {
 		if (Enemy[i].exist == FALSE)
@@ -271,7 +276,7 @@ void EnemyMoveAction() {
 	}
 }
 
-void EnemyBulletAction(int i) {
+void EnemyBulletAction(int i) { // 적 총알 
 	int j;
 	if (random(20) == 0) {
 		for (j = 0; j < MAXENEMYBULLET && EnemyBullet[j].exist == TRUE; j++) {
@@ -286,17 +291,17 @@ void EnemyBulletAction(int i) {
 	}
 }
 
-void DrawEnemyBullet(int i) {
+void DrawEnemyBullet(int i) { // 적 총알 그리기.
 	gotoxy(EnemyBullet[i].x, EnemyBullet[i].y);
 	printf("*");
 }
 
-void EraseEnemyBullet(int i) {
+void EraseEnemyBullet(int i) { // 적 총알 지우기.
 	gotoxy(EnemyBullet[i].x, EnemyBullet[i].y);
 	printf(" ");
 }
 
-void MoveEnemyBullet() {
+void MoveEnemyBullet() { // 적 총알 움직임.
 	int i;
 	for (i = 0; i < MAXBULLET; i++) {
 		if (EnemyBullet[i].exist == FALSE)
@@ -322,7 +327,7 @@ void MoveEnemyBullet() {
 	}
 }
 
-void EnemyCrash() {
+void EnemyCrash() { // Player 총알에 적 총알이 맞는 경우.
 	int i;
 	for (i = 0; i < MAXENEMY; i++) {
 		if (Enemy[i].exist == FALSE || Enemy[i].type == -1) {
@@ -342,7 +347,7 @@ void EnemyCrash() {
 	}
 }
 
-void PlayerCrash() {
+void PlayerCrash() { // 적 총알에 Player 동체가 맞는 경우.
 	int i;
 	for (i = 0; i < MAXENEMYBULLET; i++) {
 		if (EnemyBullet[i].exist == FALSE)
@@ -358,3 +363,5 @@ void PlayerCrash() {
 		}
 	}
 }
+
+
